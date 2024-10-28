@@ -6,7 +6,7 @@
 cmake_minimum_required(VERSION 3.30.5 FATAL_ERROR)
 cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
 
-set(PROJECT_BRIEF "SIMD Tools Getting Started")
+set(PROJECT_BRIEF "getting started with ein")
 
 project(ein_getting_started)
 
