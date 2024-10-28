@@ -38,7 +38,7 @@ include(FetchContent)
 FetchContent_Declare(
   ein
   GIT_REPOSITORY https://github.com/ekmett/ein.git
-  GIT_TAG sf-ein-getting-started
+  GIT_TAG sf-ein-generalize-doxyfile
 )
 
 FetchContent_MakeAvailable(ein)
@@ -48,8 +48,15 @@ set(exes
   "ein_getting_started_2:src/ein_getting_started_2.cpp"
 )
 
-
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/h)
+
+configure_file(
+  "${ein_SOURCE_DIR}/h/config.hpp.in"
+  "${ein_BINARY_DIR}/h/config.hpp"
+)
+
+target_include_directories(ein PUBLIC "${ein_BINARY_DIR}/h")
+target_include_directories(ein PUBLIC "${ein_BINARY_DIR}/lib/ein-build/h")
 
 set(ein_BUILD_DIR "${CMAKE_SOURCE_DIR}/lib/ein-build/src/CMakeFiles/ein.dir")
 
