@@ -1,5 +1,5 @@
 # SPDX-FileType: Source
-# SPDX-FileCopyrightText: 2024 Shayne Fletcher <hayne@shaynefletcher.org>
+# SPDX-FileCopyrightText: 2024 Edward Kmett <ekmett@gmail.com>, 2024 Shayne Fletcher <shayne@shaynefletcher.org>
 # SPDX-License-Identifier: BSD-2-Clause OR Apache-2.0
 
 cmake_minimum_required(VERSION 3.30.5 FATAL_ERROR)
@@ -16,21 +16,23 @@ set(CMAKE_CXX_SCAN_FOR_MODULES TRUE)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
+set(CMAKE_CXX_FLAGS_DEBUG_INIT "-O0 -g3 -ggdb3 -gcolumn-info -gembed-source")
+
 set(CXX_Clang "$<COMPILE_LANG_AND_ID:CXX,AppleClang,Clang>")
 set(CXX_Gcc "$<COMPILE_LANG_AND_ID:CXX,GNU>")
 set(CXX_GccOrClang "$<COMPILE_LANG_AND_ID:CXX,AppleClang,Clang,GNU>")
+
 set(Link_Clang "$<LINK_LANG_AND_ID:CXX,AppleClang,Clang>")
 set(Link_Gcc "$<COMPILE_LANG_AND_ID:CXX,GNU>")
 set(Link_GccOrClang "$<LINK_LANG_AND_ID:CXX,AppleClang,Clang,GNU>")
 
-# add lots of debug info to Debug builds
-set(CMAKE_CXX_FLAGS_DEBUG_INIT "-O0 -g3 -ggdb3 -gcolumn-info -gembed-source")
-
 set(FETCHCONTENT_BASE_DIR "${CMAKE_SOURCE_DIR}/lib")
+
 include(FetchContent)
 
 FetchContent_Declare(
@@ -46,16 +48,22 @@ set(exes
   "ein_getting_started_2:src/ein_getting_started_2.cpp"
 )
 
+
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/h)
+
 set(ein_BUILD_DIR "${CMAKE_SOURCE_DIR}/lib/ein-build/src/CMakeFiles/ein.dir")
 
 foreach(EXECUTABLE_ITEM ${exes})
   string(REPLACE ":" ";" EXECUTABLE_INFO ${EXECUTABLE_ITEM})
   list(GET EXECUTABLE_INFO 0 exe)
   list(GET EXECUTABLE_INFO 1 src)
+
   add_executable(${exe} ${src})
+
   target_include_directories(${exe} PRIVATE "${ein_BUILD_DIR}")
   target_link_libraries(${exe} PRIVATE ein)
+
   target_compile_options(${exe} PUBLIC "$<${CXX_GccOrClang}:-std=c++23>")
   target_compile_options(${exe} PUBLIC "$<${CXX_GccOrClang}:-msse4.2;-mavx;-mbmi2;-mfma;-mavx2;-ftree-vectorize;-funroll-loops>")
+
 endforeach()

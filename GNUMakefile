@@ -12,7 +12,7 @@ TESTS := $(notdir $(wildcard t/t_*.cpp))
 PHONY := all build clean run test tags
 REPO := https://github.com/shayne-fletcher/ein-getting-started/
 PROJECT := ein_getting_started
-EXES := ein_getting_started
+EXES := ein_getting_started ein_getting_started_2
 
 # run `make DEBUG=1` to see these
 ifdef DEBUG
