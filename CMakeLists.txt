@@ -39,7 +39,7 @@ include(FetchContent)
 FetchContent_Declare(
   ein
   GIT_REPOSITORY https://github.com/ekmett/ein.git
-  GIT_TAG sf-ein-generalize-doxyfile
+  GIT_TAG sf-external-builds-more
 )
 
 FetchContent_MakeAvailable(ein)
