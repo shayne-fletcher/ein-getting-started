@@ -1,5 +1,6 @@
 # SPDX-FileType: Source
-# SPDX-FileCopyrightText: 2024 Edward Kmett <ekmett@gmail.com>, 2024 Shayne Fletcher <shayne@shaynefletcher.org>
+# SPDX-FileCopyrightText: 2024 Edward Kmett <ekmett@gmail.com>
+# SPDX-FileCopyrightText: 2024 Shayne Fletcher <shayne@shaynefletcher.org>
 # SPDX-License-Identifier: BSD-2-Clause OR Apache-2.0
 
 cmake_minimum_required(VERSION 3.30.5 FATAL_ERROR)
@@ -43,23 +44,11 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(ein)
 
+target_include_directories(ein PUBLIC "${ein_BINARY_DIR}/h")
+
 set(exes
   "ein_getting_started:src/ein_getting_started.cpp"
-  "ein_getting_started_2:src/ein_getting_started_2.cpp"
 )
-
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/h)
-
-configure_file(
-  "${ein_SOURCE_DIR}/h/config.hpp.in"
-  "${ein_BINARY_DIR}/h/config.hpp"
-)
-
-target_include_directories(ein PUBLIC "${ein_BINARY_DIR}/h")
-target_include_directories(ein PUBLIC "${ein_BINARY_DIR}/lib/ein-build/h")
-
-set(ein_BUILD_DIR "${CMAKE_SOURCE_DIR}/lib/ein-build/src/CMakeFiles/ein.dir")
-
 foreach(EXECUTABLE_ITEM ${exes})
   string(REPLACE ":" ";" EXECUTABLE_INFO ${EXECUTABLE_ITEM})
   list(GET EXECUTABLE_INFO 0 exe)
@@ -67,10 +56,9 @@ foreach(EXECUTABLE_ITEM ${exes})
 
   add_executable(${exe} ${src})
 
-  target_include_directories(${exe} PRIVATE "${ein_BUILD_DIR}")
-  target_link_libraries(${exe} PRIVATE ein)
-
   target_compile_options(${exe} PUBLIC "$<${CXX_GccOrClang}:-std=c++23>")
   target_compile_options(${exe} PUBLIC "$<${CXX_GccOrClang}:-msse4.2;-mavx;-mbmi2;-mfma;-mavx2;-ftree-vectorize;-funroll-loops>")
+
+  target_link_libraries(${exe} PRIVATE ein)
 
 endforeach()
