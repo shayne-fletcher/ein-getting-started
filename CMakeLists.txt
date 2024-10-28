@@ -30,10 +30,7 @@ set(Link_GccOrClang "$<LINK_LANG_AND_ID:CXX,AppleClang,Clang,GNU>")
 # add lots of debug info to Debug builds
 set(CMAKE_CXX_FLAGS_DEBUG_INIT "-O0 -g3 -ggdb3 -gcolumn-info -gembed-source")
 
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/h)
-
 set(FETCHCONTENT_BASE_DIR "${CMAKE_SOURCE_DIR}/lib")
-
 include(FetchContent)
 
 FetchContent_Declare(
@@ -44,41 +41,21 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(ein)
 
-message("CMAKE_BINARY_DIR/h = ${CMAKE_BINARY_DIR}/h")
-
-file(MAKE_DIRECTORY "${ein_BINARY_DIR}/h")
-message("ein_BINARY_DIR/h = ${ein_BINARY_DIR}/h")
-
-target_include_directories(ein INTERFACE "${CMAKE_BINARY_DIR}/h")
-target_include_directories(ein INTERFACE "${ein_BINARY_DIR}/h")
-
-configure_file(
-  "${ein_SOURCE_DIR}/h/config.hpp.in"
-  "${ein_BINARY_DIR}/h/config.hpp"
+set(exes
+  "ein_getting_started:src/ein_getting_started.cpp"
+  "ein_getting_started_2:src/ein_getting_started_2.cpp"
 )
 
-# # Copy headers to the binary directory
-# add_custom_target(ein_headers
-#     COMMAND ${CMAKE_COMMAND} -E copy_directory ${ein_SOURCE_DIR}/h ${ein_BINARY_DIR}/h
-#     COMMENT "Copying header files to build directory"
-# )
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/h)
+set(ein_BUILD_DIR "${CMAKE_SOURCE_DIR}/lib/ein-build/src/CMakeFiles/ein.dir")
 
-# Make sure headers are generated before compiling ein
-# add_dependencies(ein ein_headers)
-
-# Set the include directories for ein
-target_include_directories(ein PUBLIC "${CMAKE_BINARY_DIR}/h")
-target_include_directories(ein PUBLIC "${ein_BINARY_DIR}/h")
-target_include_directories(ein PUBLIC "${ein_BINARY_DIR}/lib/h")
-message("cmake binary dir = ${cmake_BINARY_DIR}/h")
-message("binary dir = ${ein_BINARY_DIR}/h")
-
-add_executable(ein_getting_started src/ein_getting_started.cpp)
-# Ensure to add the directory containing the module files (.pcm)
-target_include_directories(ein_getting_started PRIVATE "${CMAKE_SOURCE_DIR}/lib/ein-build/src/CMakeFiles/ein.dir")
-target_link_libraries(ein_getting_started PRIVATE ein)
-
-target_compile_options(ein_getting_started PUBLIC "$<${CXX_GccOrClang}:-std=c++23>") # why isn't this being set?!
-target_compile_options(ein_getting_started PUBLIC "$<${CXX_GccOrClang}:-msse4.2;-mavx;-mbmi2;-mfma;-mavx2;-ftree-vectorize;-funroll-loops>")
-# target_compile_options(ein PUBLIC "$<${CXX_GccOrClang}:-mavx512f;-mavx512dq;-mavx512bw;-mavx512vl;-mavx512vbmi2;-mavx512vp2intersect;-mavx512bf16>")
-# target_compile_options(ein PUBLIC "$<${CXX_GccOrClang}:-Wno-unqualified-std-cast-call>")
+foreach(EXECUTABLE_ITEM ${exes})
+  string(REPLACE ":" ";" EXECUTABLE_INFO ${EXECUTABLE_ITEM})
+  list(GET EXECUTABLE_INFO 0 exe)
+  list(GET EXECUTABLE_INFO 1 src)
+  add_executable(${exe} ${src})
+  target_include_directories(${exe} PRIVATE "${ein_BUILD_DIR}")
+  target_link_libraries(${exe} PRIVATE ein)
+  target_compile_options(${exe} PUBLIC "$<${CXX_GccOrClang}:-std=c++23>")
+  target_compile_options(${exe} PUBLIC "$<${CXX_GccOrClang}:-msse4.2;-mavx;-mbmi2;-mfma;-mavx2;-ftree-vectorize;-funroll-loops>")
+endforeach()
