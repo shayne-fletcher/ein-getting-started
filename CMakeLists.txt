@@ -48,6 +48,7 @@ target_include_directories(ein PUBLIC "${ein_BINARY_DIR}/h")
 
 set(exes
   "ein_getting_started:src/ein_getting_started.cpp"
+  "ein_getting_started_2:src/ein_getting_started_2.cpp"
 )
 foreach(EXECUTABLE_ITEM ${exes})
   string(REPLACE ":" ";" EXECUTABLE_INFO ${EXECUTABLE_ITEM})
